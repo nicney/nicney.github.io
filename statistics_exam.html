@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistics Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#000; --glass:rgba(255,255,255,0.08);
+      --text:#fff; --muted:#cfcfcf; --blue:#0A84FF;
+      --shadow:0 8px 24px rgba(0,0,0,0.45); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;color:var(--text);background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;}
+    header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px;background:rgba(20,20,20,0.8);backdrop-filter:blur(14px);}
+    .brand{font-size:22px;font-weight:700}
+    .back-btn{appearance:none;border:none;background:var(--glass);color:#fff;
+      padding:8px 12px;border-radius:12px;cursor:pointer}
+    .page{display:grid;gap:20px;grid-template-columns:1fr 280px;max-width:1200px;margin:20px auto;padding:0 20px}
+    @media(max-width:900px){.page{grid-template-columns:1fr}}
+    .panel{background:rgba(255,255,255,0.06);border-radius:var(--radius);padding:20px;backdrop-filter:blur(16px)}
+    .title{font-weight:800;font-size:26px;margin-bottom:10px}
+    .questions{display:flex;flex-direction:column;gap:16px}
+    .q-card{background:rgba(255,255,255,0.06);border-radius:14px;padding:14px}
+    .q-title{font-weight:700;margin-bottom:6px}
+    .q-desc{color:var(--muted);font-size:14px;margin-bottom:10px}
+    textarea{width:100%;min-height:100px;background:rgba(0,0,0,0.35);
+      border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;padding:10px}
+    .actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+    .btn{appearance:none;border:none;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--blue);color:#fff;box-shadow:0 6px 18px rgba(10,132,255,0.35)}
+    .btn.secondary{background:var(--glass);color:#fff}
+    .participants{background:rgba(255,255,255,0.06);border-radius:var(--radius);padding:16px}
+    .participants h3{margin:0 0 10px}
+    .plist{display:flex;flex-direction:column;gap:10px}
+    .p-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);
+      border-radius:12px;padding:8px}
+    .avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.15);
+      display:grid;place-items:center;font-weight:800}
+    /* Overlay */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background:rgba(0,0,0,0.55);backdrop-filter:blur(6px)}
+    .overlay.show{display:flex}
+    .overlay-card{background:rgba(30,30,30,0.85);backdrop-filter:blur(18px);
+      border-radius:20px;padding:28px 22px;width:min(500px,90vw);text-align:center;
+      box-shadow:0 8px 28px rgba(0,0,0,0.55), inset 0 1px 1px rgba(255,255,255,0.1)}
+    .headline{font-size:22px;font-weight:800;margin:0 0 10px}
+    .muted{color:var(--muted);font-size:15px;margin-bottom:12px}
+    .divider{height:1px;background:rgba(255,255,255,0.08);margin:14px 0}
+  </style>
+</head>
+<body>
+  <header>
+    <button class="back-btn" onclick="location.href='As.html'">← Back</button>
+    <div class="brand">Statistics Exam</div>
+    <div style="width:82px"></div>
+  </header>
+
+  <main class="page">
+    <section class="panel">
+      <div class="title">Statistics</div>
+      <div class="questions">
+        <div class="q-card">
+          <div class="q-title">Q1 — Hypothesis Testing</div>
+          <div class="q-desc">Explain null vs alternative hypothesis and how p-value is used.</div>
+          <textarea id="q1"></textarea>
+        </div>
+        <div class="q-card">
+          <div class="q-title">Q2 — Probability in Real Life</div>
+          <div class="q-desc">Give a real-world example where probability quantifies uncertainty.</div>
+          <textarea id="q2"></textarea>
+        </div>
+        <div class="q-card">
+          <div class="q-title">Q3 — Case for Statistics</div>
+          <div class="q-desc">Describe a scenario where statistics improves outcomes.</div>
+          <textarea id="q3"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="finishBtn">Finish Session</button>
+          <button class="btn secondary" id="saveBtn">Save Draft</button>
+        </div>
+      </div>
+    </section>
+    <aside class="participants">
+      <h3>Participants</h3>
+      <div class="plist" id="plist"></div>
+    </aside>
+  </main>
+
+  <!-- Overlay -->
+  <div class="overlay" id="doneOverlay">
+    <div class="overlay-card">
+      <h2 class="headline">Submission Complete</h2>
+      <p class="muted">ระบบจะตรวจข้อสอบและแจ้งผลภายหลัง</p>
+      <div class="divider"></div>
+      <button class="btn primary" onclick="location.href='As.html'">Back to Workons</button>
+    </div>
+  </div>
+
+  <script>
+    const plist=document.getElementById('plist');
+    const participants=['You','John Doe','Alice Kim','David','Maria','Kenji'];
+    plist.innerHTML=participants.map(n=>`
+      <div class="p-item"><div class="avatar">${n[0]}</div><div>${n}</div></div>
+    `).join('');
+
+    document.getElementById('finishBtn').addEventListener('click',()=>{
+      document.getElementById('doneOverlay').classList.add('show');
+    });
+  </script>
+</body>
+</html>

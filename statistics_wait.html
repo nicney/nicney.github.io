@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistics Session (Waiting)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#000; --glass:rgba(255,255,255,0.08);
+      --glass-strong:rgba(255,255,255,0.12); --text:#fff; --muted:#cfcfcf;
+      --blue:#0A84FF; --shadow:0 8px 24px rgba(0,0,0,0.45); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--text);
+      background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
+    }
+    header{
+      position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px;background:rgba(20,20,20,0.8);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .brand{font-size:22px;font-weight:700}
+    .back-btn{appearance:none;border:none;background:var(--glass);color:#fff;
+      padding:8px 12px;border-radius:12px;cursor:pointer}
+    main{max-width:600px;margin:40px auto;padding:20px}
+    .panel{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);
+      border-radius:var(--radius);backdrop-filter:blur(16px);box-shadow:var(--shadow);
+      padding:20px}
+    .title{font-weight:800;font-size:28px;margin-bottom:8px}
+    .countdown{font-size:18px;font-weight:600;margin-bottom:16px}
+    .cert-card{background:rgba(255,255,255,0.07);border-radius:14px;padding:12px;margin-bottom:16px}
+    .cert-badge{background:rgba(52,199,89,0.18);color:#eaffea;padding:4px 10px;
+      border-radius:999px;font-size:12px;font-weight:700;margin-right:8px}
+    .exam-info{color:var(--muted);font-size:15px;line-height:1.5;margin-bottom:20px}
+    .btn{appearance:none;border:none;cursor:pointer;width:100%;padding:12px 18px;
+      border-radius:12px;font-weight:700;font-size:16px}
+    .btn:disabled{background:#555;color:#aaa;cursor:not-allowed}
+    .btn.active{background:var(--blue);color:#fff;box-shadow:0 6px 18px rgba(10,132,255,0.35)}
+  </style>
+</head>
+<body>
+  <header>
+    <button class="back-btn" onclick="location.href='As.html'">← Back</button>
+    <div class="brand">Statistics Exam</div>
+    <div style="width:82px"></div>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="title">Statistics</div>
+      <div id="countdown" class="countdown">Starting in 05:00</div>
+      <div class="cert-card">
+        <span class="cert-badge">CERTIFIED</span>
+        Complete this session to receive a Statistics participation certificate.
+      </div>
+      <div class="exam-info">
+        📘 Topics covered:<br>
+        – Probability distributions<br>
+        – Hypothesis testing<br>
+        – Regression & forecasting<br>
+        – Statistical inference<br>
+        Duration: 30 minutes · 3 Questions
+      </div>
+      <button class="btn" id="joinBtn" disabled>Join Session</button>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_START='workons_statistics_startAt';
+    const cdEl=document.getElementById('countdown');
+    const joinBtn=document.getElementById('joinBtn');
+
+    function ensureStartTime(){
+      let t=Number(localStorage.getItem(STORAGE_START));
+      const now=Date.now();
+      if(!t || t<now) t=now+5*60*1000; // mock +5 นาที
+      localStorage.setItem(STORAGE_START,t);
+      return t;
+    }
+    const startAt=ensureStartTime();
+
+    function fmt(sec){
+      const m=String(Math.floor(sec/60)).padStart(2,'0');
+      const s=String(sec%60).padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function tick(){
+      const diff=Math.max(0,Math.floor((startAt-Date.now())/1000));
+      if(diff>0){
+        cdEl.textContent=`Starting in ${fmt(diff)}`;
+        joinBtn.disabled=true;
+        joinBtn.classList.remove('active');
+      }else{
+        cdEl.textContent='Session started';
+        joinBtn.disabled=false;
+        joinBtn.classList.add('active');
+      }
+    }
+    setInterval(tick,1000); tick();
+
+    joinBtn.addEventListener('click',()=>location.href='statistics_exam.html');
+  </script>
+</body>
+</html>

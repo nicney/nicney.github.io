@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workons iOS Style</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #000, #111);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #fff;
+      padding-bottom: 90px; /* กัน footer ทับ content */
+    }
+
+    header {
+      padding: 15px 20px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .search-container input {
+      width: 85%;
+      padding: 12px 15px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      backdrop-filter: blur(10px);
+    }
+
+    .tags {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin: 10px 20px;
+    }
+    .tag {
+      background: rgba(255,255,255,0.08);
+      padding: 6px 14px;
+      border-radius: 16px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Profile icon */
+    .profile {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #fff url('https://via.placeholder.com/40') no-repeat center/cover;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+
+    /* Queue */
+    .queue {
+      background: rgba(255,255,255,0.05);
+      padding: 15px 20px;
+      font-size: 16px;
+      border-top: 1px solid #222;
+      backdrop-filter: blur(12px);
+    }
+    .queue h3 { margin: 0 0 10px 0; }
+    .queue ul { list-style: none; padding: 0; margin: 0; }
+    .queue ul li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #333;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    /* ทำให้ชื่อ session ที่เป็นลิงก์ยืดเต็มพื้นที่ฝั่งซ้าย คลิกง่าย */
+    .queue ul li a.session-link { color: #fff; text-decoration: none; flex: 1; }
+
+    .remove-btn {
+      background: #FF3B30;
+      border: none;
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 13px;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .remove-btn:hover { background: #D91E18; transform: scale(1.05); }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 100px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+    .card:hover { transform: scale(1.05); }
+    .card small { display: block; font-size: 14px; margin-top: 5px; color: #ccc; }
+
+    /* Competition Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+    }
+
+    .modal-content {
+      background: rgba(30,30,30,0.9);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      color: #fff;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    .modal h2 { margin-top: 0; font-size: 26px; }
+    .close { position: absolute; top: 15px; right: 20px; font-size: 22px; cursor: pointer; }
+
+    .join-btn {
+      margin-top: 20px;
+      background: #007AFF;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+    .join-btn:hover { background: #005ECB; transform: scale(1.05); }
+
+    /* Profile Panel */
+    .profile-panel {
+      position: fixed;
+      top: 0; right: -400px;
+      width: 350px; height: 100%;
+      background: rgba(20,20,20,0.95);
+      backdrop-filter: blur(20px);
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      box-shadow: -4px 0 25px rgba(0,0,0,0.5);
+      transition: right 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    .profile-panel.open { right: 0; }
+
+    .profile-pic {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: url('https://via.placeholder.com/100') no-repeat center/cover;
+      margin: 20px auto;
+      border: 3px solid #fff;
+    }
+
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 22px; cursor: pointer; color: #fff; }
+
+    .change-btn {
+      display: block; margin: 10px auto;
+      background: #34C759;
+      color: #fff; border: none;
+      border-radius: 12px;
+      padding: 8px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .change-btn:hover { background: #28A745; transform: scale(1.05); }
+    input[type="file"] { display: none; }
+
+    .card-profile {
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 15px;
+      margin-top: 15px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .card-profile h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+      color: #ddd;
+    }
+    .info p { margin: 6px 0; font-size: 15px; color: #fff; }
+    .private { filter: blur(5px); user-select: none; }
+    .private-label {
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      font-size: 14px;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* =============== FRIEND SYSTEM (Overlay ไม่ดัน layout) =============== */
+    .friend-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #FF3B30;
+      color: #fff;
+      font-size: 11px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .friend-badge.pop { animation: friendBadgePop 420ms cubic-bezier(.2,.7,.3,1.3); }
+    @keyframes friendBadgePop {
+      0% { transform: scale(0.4); opacity: 0; }
+      60% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .friend-panel {
+      position: fixed;
+      width: 320px;
+      background: rgba(20,20,20,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.55);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 460ms cubic-bezier(.2,.7,.2,1);
+      z-index: 1500;
+    }
+    .friend-panel.open { max-height: 70vh; }
+    .friend-panel-inner { padding: 14px; }
+    .friend-search {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .friend-suggestions {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .friend-suggestions div {
+      padding: 9px 12px;
+      cursor: pointer;
+      transition: background .18s ease;
+    }
+    .friend-suggestions div:hover { background: rgba(255,255,255,0.14); }
+    .friend-list {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+      font-size: 14px;
+      border-top: 1px solid #2a2a2a;
+    }
+    .friend-list li {
+      padding: 8px 2px;
+      border-bottom: 1px solid #2a2a2a;
+      cursor: pointer;
+    }
+    .status-pill {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 6px;
+      background: rgba(255,255,255,.12);
+    }
+
+    /* Friend Profile Modal (reuse .modal/.modal-content) */
+    .friend-modal-content { max-width: 480px; }
+    .friend-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: url('https://via.placeholder.com/100') no-repeat center/cover;
+      margin: 10px auto 14px;
+      border: 3px solid #fff;
+    }
+    .add-btn {
+      margin-top: 14px;
+      background: #007AFF;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: transform .15s ease;
+    }
+    .add-btn:hover { background:#005ECB; transform: translateY(-1px); }
+
+    /* =============== FOOTER NAV (iOS + ปุ่มกลมไหลไปมา) =============== */
+    footer {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.4);
+      z-index: 2000;
+    }
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      color: #aaa;
+      cursor: pointer;
+      padding: 8px 0;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+    .nav-item.active { color: #fff; font-weight: 600; }
+
+    /* ปุ่มกลม (Glass Orb) เคลื่อนตาม tab */
+    .bubble-indicator {
+      position: absolute;
+      top: -20px;
+      width: 34px;
+      height: 34px;
+      left: 0;
+      border-radius: 999px;
+      background: radial-gradient(120% 120% at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.12) 60%, rgba(255,255,255,0.08) 100%);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.45), inset 0 1px 2px rgba(255,255,255,0.25);
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.7);
+      transition:
+        left 420ms cubic-bezier(.2,1.2,.22,1),
+        transform 420ms cubic-bezier(.2,1.2,.22,1),
+        opacity 200ms ease;
+    }
+    .bubble-indicator.show { opacity: 1; transform: scale(1); }
+    .bubble-indicator.pop { animation: orbPop 360ms cubic-bezier(.2,1.4,.22,1); }
+    @keyframes orbPop {
+      0% { transform: scale(0.85); }
+      60% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* ===== (เพิ่ม) SPA container (ส่วนกลางที่สลับแสดง) ===== */
+    .page { display: none; }
+    .page.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <header>Workons</header>
+
+  <div class="search-container">
+    <input type="text" placeholder="Search..">
+  </div>
+
+  <div class="tags">
+    <div class="tag">V</div>
+    <div class="tag">team</div>
+    <div class="tag">friends</div>
+  </div>
+
+  <div class="profile" onclick="toggleProfile()" id="profileIcon"></div>
+
+  <!-- =================== Competition Page (ของเดิม) =================== -->
+  <!-- Queue -->
+  <div class="queue" id="queue">
+    <h3>My Sessions</h3>
+    <ul id="queueList"><li>No active sessions</li></ul>
+  </div>
+
+  <!-- Card Grid -->
+  <div class="grid" id="grid">
+    <div class="card" onclick="openModal('Matrix Competition')">
+      MATRIX
+      <small>16:00 - 17:00</small>
+    </div>
+    <div class="card" onclick="openModal('Statistics Exam')">
+      Statistics
+      <small>18:00 - 18:30</small>
+    </div>
+  </div>
+
+  <!-- ========== SPA: 3 เพจใหม่ (ไม่ยุ่งกับของเดิม แค่เพิ่ม) ========== -->
+  <div id="page-marketplace" class="page">
+    <div style="padding:20px;">
+      <div class="card">Marketplace Page (coming soon)</div>
+    </div>
+  </div>
+
+  <div id="page-courses" class="page">
+    <div style="padding:20px;">
+      <div class="card-profile">
+        <h3>Courses</h3>
+        <div class="info">
+          <p>• Course A</p>
+          <p>• Course B</p>
+          <p>• Course C</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-message" class="page">
+    <div style="padding:20px;">
+      <div class="card-profile">
+        <h3>Messages</h3>
+        <div class="info">
+          <p>No messages yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ================================================================ -->
+
+  <!-- Footer (Bubble Nav + Orb) -->
+  <footer>
+    <div class="nav-item active" data-label="Competition">Competition</div>
+    <div class="nav-item" data-label="Marketplace">Marketplace</div>
+    <div class="nav-item" data-label="Courses">Courses</div>
+    <div class="nav-item" data-label="Message">Message</div>
+    <div class="bubble-indicator" id="bubble"></div>
+  </footer>
+
+  <!-- Competition Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalDescription"></p>
+      <p><b>Questions:</b> 20 multiple-choice + 5 problem-solving</p>
+      <button class="join-btn" onclick="joinSession()">Join Session</button>
+    </div>
+  </div>
+
+  <!-- Reminder Modal (ใหม่สำหรับ 5 นาที + เดโม 5 วินาที) -->
+  <div class="modal" id="reminderModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeReminder()">&times;</span>
+      <h2 id="reminderTitle">Session Reminder</h2>
+      <p id="reminderTime"></p>
+      <p><b>กำลังจะเริ่มในอีกไม่เกิน 5 นาที</b></p>
+      <button class="join-btn" onclick="joinReminderSession()">Join Session</button>
+    </div>
+  </div>
+
+  <!-- Profile Slide Panel -->
+  <div class="profile-panel" id="profilePanel">
+    <span class="close-btn" onclick="toggleProfile()">&times;</span>
+    <div class="profile-pic" id="profilePic"></div>
+    <button class="change-btn" onclick="document.getElementById('uploadPic').click()">Change Photo</button>
+    <input type="file" id="uploadPic" accept="image/*" onchange="updateProfilePic(event)">
+    <h2>John Doe</h2>
+
+    <!-- Public Card -->
+    <div class="card-profile">
+      <h3>👤 Profile Info</h3>
+      <div class="info">
+        <p><b>Nickname:</b> Johnny</p>
+        <p><b>Age:</b> 21</p>
+        <p><b>Gender:</b> Male</p>
+        <p><b>Year:</b> 3rd Year</p>
+      </div>
+    </div>
+
+    <!-- Private Card -->
+    <div class="card-profile">
+      <h3>📊 Data Analytics</h3>
+      <div class="private">
+        <p><b>Courses Completed:</b> 5</p>
+        <p><b>Competitions Joined:</b> 3</p>
+        <p><b>Average Score:</b> 82%</p>
+        <p><b>Progress:</b> Improving steadily 🔥</p>
+      </div>
+      <div class="private-label">🔒 Subscription Only</div>
+    </div>
+  </div>
+
+  <!-- Friend Panel (Overlay) -->
+  <div class="friend-panel" id="friendPanel" aria-hidden="true">
+    <div class="friend-panel-inner">
+      <input class="friend-search" id="friendSearch" type="text" placeholder="Search friends...">
+      <div class="friend-suggestions" id="friendSuggestions"></div>
+      <ul class="friend-list" id="friendList"><li>No friends yet</li></ul>
+    </div>
+  </div>
+
+  <!-- Friend Profile Modal -->
+  <div class="modal" id="friendModal">
+    <div class="modal-content friend-modal-content">
+      <span class="close" onclick="closeFriendProfile()">&times;</span>
+      <div class="friend-avatar" id="friendAvatar"></div>
+      <h2 id="friendProfileName">Friend Name</h2>
+
+      <!-- Public -->
+      <div class="card-profile">
+        <h3>👤 Profile Info</h3>
+        <div class="info">
+          <p><b>Nickname:</b> <span id="friendNick"></span></p>
+          <p><b>Age:</b> <span id="friendAge"></span></p>
+          <p><b>Gender:</b> <span id="friendGender"></span></p>
+          <p><b>Year:</b> <span id="friendYear"></span></p>
+        </div>
+      </div>
+
+      <!-- Private -->
+      <div class="card-profile">
+        <h3>📊 Data Analytics</h3>
+        <div class="private">
+          <p><b>Courses Completed:</b> 5</p>
+          <p><b>Competitions Joined:</b> 2</p>
+          <p><b>Average Score:</b> 78%</p>
+          <p><b>Progress:</b> Steady 📈</p>
+        </div>
+        <div class="private-label">🔒 Subscription Only</div>
+      </div>
+
+      <button class="add-btn" id="addFriendBtn">Add Friend</button>
+      <!-- ⚠️ Pending→Friend หลัง 5 วินาที เป็น mock สำหรับเดโมเท่านั้น -->
+    </div>
+  </div>
+
+  <script>
+    /* ===== Footer Orb Navigation ===== */
+    const items = document.querySelectorAll('.nav-item');
+    const bubble = document.getElementById('bubble');
+
+    function moveOrb(el){
+      const rect = el.getBoundingClientRect();
+      const parentRect = el.parentElement.getBoundingClientRect();
+      const orbW = bubble.offsetWidth || 34;
+
+      // ตำแหน่งให้อยู่กึ่งกลางของ tab
+      bubble.style.left = (rect.left + rect.width/2 - parentRect.left - orbW/2) + "px";
+
+      // แสดง + เล่น pop ทุกครั้ง
+      bubble.classList.add('show');
+      bubble.classList.remove('pop');
+      void bubble.offsetWidth; // force reflow
+      bubble.classList.add('pop');
+
+      // active state
+      items.forEach(i=>i.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    items.forEach(el=> {
+      el.addEventListener('click', ()=>moveOrb(el));
+      // เพิ่มสลับ page แบบ SPA โดยไม่แก้โค้ดเดิมทิ้ง
+      el.addEventListener('click', ()=>activatePage(el.dataset.label));
+    });
+
+    window.addEventListener('load', ()=>{
+      const active = document.querySelector('.nav-item.active') || items[0];
+      moveOrb(active);
+      activatePage(active.dataset.label);
+    });
+    window.addEventListener('resize', ()=>{
+      const active = document.querySelector('.nav-item.active') || items[0];
+      moveOrb(active);
+    });
+
+    /* ===== SPA toggle (เพิ่มใหม่ ไม่แตะ markup เดิมของ competition) ===== */
+    function activatePage(label){
+      const showCompetition = (label === 'Competition');
+      // ของเดิม (competition) — แค่ซ่อน/แสดง
+      document.getElementById('queue').style.display = showCompetition ? '' : 'none';
+      document.getElementById('grid').style.display  = showCompetition ? '' : 'none';
+      // เพจใหม่
+      document.getElementById('page-marketplace').classList.toggle('show', label==='Marketplace');
+      document.getElementById('page-courses').classList.toggle('show', label==='Courses');
+      document.getElementById('page-message').classList.toggle('show', label==='Message');
+    }
+
+    /* ===== Competition Modal (ของเดิม) ===== */
+    let currentSession=null;
+    function openModal(title){
+      document.getElementById("modal").style.display="flex";
+      document.getElementById("modalTitle").innerText=title;
+      document.getElementById("modalDescription").innerText=
+        title==="Matrix Competition"
+        ?"This competition covers linear algebra, vector spaces, determinants, eigenvalues, and matrix operations."
+        :"This exam covers probability, distributions, hypothesis testing, regression, and statistical inference.";
+      currentSession=title;
+    }
+    function closeModal(){document.getElementById("modal").style.display="none";}
+    
+    /* ===== (อัปเดต) JOIN SESSION → แทรกลิงก์ไป statistics_wait.html เมื่อเป็น Statistics
+            + กันซ้ำด้วย localStorage และจำคิวไว้ ===== */
+    function joinSession(){
+      // อ่านรายการที่บันทึกไว้
+      const savedSessions = JSON.parse(localStorage.getItem('savedSessions') || '[]');
+      // กันซ้ำ
+      if (savedSessions.includes(currentSession)) {
+        closeModal();
+        return;
+      }
+
+      const q=document.getElementById("queueList");
+      if(q.children.length===1&&q.children[0].innerText==="No active sessions"){q.innerHTML="";}
+      const li=document.createElement("li");
+
+      // ลิงก์เฉพาะ Statistics; อื่น ๆ เป็น "#" ไปก่อน (ตามโค้ดเดิม)
+      let sessionLink = "#";
+      if((currentSession||"").toLowerCase().includes("statistics")){
+        sessionLink = "statistics_wait.html";
+      }
+
+      li.innerHTML = `
+        <a href="${sessionLink}" class="session-link">${currentSession}</a>
+        <button class="remove-btn" onclick="removeSession(this)">Remove</button>
+      `;
+      q.appendChild(li);
+
+      // บันทึกลง localStorage (จำคิว)
+      savedSessions.push(currentSession);
+      localStorage.setItem('savedSessions', JSON.stringify(savedSessions));
+
+      closeModal();
+
+      /* ====== (เดิม) DEMO: หลังจองคิวให้มี countdown 5 วิ แล้วเด้ง Reminder ====== */
+      const cd = document.createElement('span');
+      cd.className = 'status-pill';
+      let remain = 5;
+      cd.textContent = `Starting in ${remain}s…`;
+      // แทรก countdown ไว้ก่อนปุ่ม Remove โดยไม่แก้ของเดิม
+      const removeBtn = li.querySelector('.remove-btn');
+      li.insertBefore(cd, removeBtn);
+
+      // หาเวลาของ session จาก card เดิม (ถ้าเจอจะเอาไปโชว์ modal)
+      const timeStr = (function(){
+        let t = '';
+        document.querySelectorAll('.grid .card').forEach(c=>{
+          const title = c.childNodes[0].textContent.trim();
+          if(title.toLowerCase().includes(currentSession.toLowerCase())){
+            const s = c.querySelector('small');
+            if(s) t = s.textContent.trim();
+          }
+        });
+        return t;
+      })();
+
+      const timerId = setInterval(()=>{
+        remain--;
+        if(remain > 0){
+          cd.textContent = `Starting in ${remain}s…`;
+        } else {
+          clearInterval(timerId);
+          cd.remove();
+          // เปิด reminder modal (mock)
+          showReminder(currentSession, timeStr || 'Starting now');
+        }
+      }, 1000);
+      /* ================================================================ */
+    }
+
+    function removeSession(b){
+      const li = b.parentElement;
+      const sessionName = li.querySelector('.session-link')?.innerText || '';
+      li.remove();
+
+      // ลบออกจาก localStorage ด้วย
+      let savedSessions = JSON.parse(localStorage.getItem('savedSessions') || '[]');
+      savedSessions = savedSessions.filter(name => name !== sessionName);
+      if (savedSessions.length > 0) {
+        localStorage.setItem('savedSessions', JSON.stringify(savedSessions));
+      } else {
+        localStorage.removeItem('savedSessions');
+      }
+
+      const q=document.getElementById("queueList");
+      if(q.children.length===0)q.innerHTML="<li>No active sessions</li>";
+    }
+
+    // Restore คิวจาก localStorage เมื่อโหลดหน้า (จำคิว/Back/Refresh แล้วยังอยู่)
+    window.addEventListener('load', ()=>{
+      const saved = localStorage.getItem('savedSessions');
+      if(saved){
+        const savedSessions = JSON.parse(saved);
+        if(savedSessions.length > 0){
+          const q = document.getElementById('queueList');
+          if(q.children.length===1 && q.children[0].innerText === "No active sessions"){
+            q.innerHTML = "";
+          }
+          savedSessions.forEach(sessionName => {
+            const li = document.createElement('li');
+            let sessionLink = "#";
+            if(sessionName.toLowerCase().includes("statistics")){
+              sessionLink = "statistics_wait.html";
+            }
+            li.innerHTML = `
+              <a href="${sessionLink}" class="session-link">${sessionName}</a>
+              <button class="remove-btn" onclick="removeSession(this)">Remove</button>
+            `;
+            q.appendChild(li);
+          });
+        }
+      }
+    });
+
+    /* ===== Profile Panel (ของเดิม) ===== */
+    function toggleProfile(){document.getElementById("profilePanel").classList.toggle("open");}
+    function updateProfilePic(e){
+      const f=e.target.files[0];
+      if(f){
+        const r=new FileReader();
+        r.onload=function(ev){
+          document.getElementById("profilePic").style.backgroundImage=`url(${ev.target.result})`;
+          document.getElementById("profileIcon").style.backgroundImage=`url(${ev.target.result})`;
+        }
+        r.readAsDataURL(f);
+      }
+    }
+
+    /* ===== Friend System ===== */
+    const friendData = [
+      { name: "David", nick: "Dave", age: 22, gender: "Male", year: "3rd Year", avatar: "https://via.placeholder.com/100" }
+    ];
+    const friendsAccepted = new Set();
+
+    // หา tag "friends" โดยไม่แก้ markup เดิม
+    const tags = document.querySelectorAll('.tags .tag');
+    let friendsTag = null;
+    tags.forEach(tag => {
+      if ((tag.textContent || '').trim().toLowerCase() === 'friends') friendsTag = tag;
+    });
+
+    // badge บนปุ่ม friends
+    const badge = document.createElement('span');
+    badge.id = 'friendBadge';
+    badge.className = 'friend-badge';
+    badge.textContent = '0';
+    if (friendsTag) {
+      friendsTag.style.position = 'relative';
+      friendsTag.appendChild(badge);
+    }
+
+    // friend panel overlay (fixed)
+    const friendPanel = document.getElementById('friendPanel');
+    function positionFriendPanel() {
+      if (!friendsTag) return;
+      const rect = friendsTag.getBoundingClientRect();
+      const panelWidth = 320;
+      const top = rect.bottom + window.scrollY + 8;
+      const left = rect.right + window.scrollX - panelWidth;
+      friendPanel.style.top = `${top}px`;
+      friendPanel.style.left = `${left}px`;
+    }
+    function toggleFriendPanelOverlay(evt) {
+      evt?.stopPropagation();
+      positionFriendPanel();
+      friendPanel.classList.toggle('open');
+    }
+    if (friendsTag) friendsTag.addEventListener('click', toggleFriendPanelOverlay);
+
+    // ปิดเมื่อคลิกนอก
+    document.addEventListener('click', (e) => {
+      const clickInsidePanel = friendPanel.contains(e.target);
+      const clickOnFriendsTag = friendsTag && friendsTag.contains(e.target);
+      if (!clickInsidePanel && !clickOnFriendsTag) friendPanel.classList.remove('open');
+    });
+
+    // autocomplete
+    document.getElementById('friendSearch').addEventListener('input', e => {
+      friendShowSuggestions(e.target.value);
+    });
+    function friendShowSuggestions(q) {
+      const box = document.getElementById('friendSuggestions');
+      box.innerHTML = '';
+      const v = (q || '').trim().toLowerCase();
+      if (!v) return;
+      const found = friendData.filter(p => p.name.toLowerCase().startsWith(v));
+      found.forEach(p => {
+        const row = document.createElement('div');
+        row.textContent = p.name;
+        row.onclick = () => friendOpenProfile(p);
+        box.appendChild(row);
+      });
+    }
+
+    // Friend profile modal
+    function friendOpenProfile(p) {
+      document.getElementById('friendProfileName').textContent = p.name;
+      document.getElementById('friendNick').textContent = p.nick;
+      document.getElementById('friendAge').textContent = p.age;
+      document.getElementById('friendGender').textContent = p.gender;
+      document.getElementById('friendYear').textContent = p.year;
+      document.getElementById('friendAvatar').style.backgroundImage = `url(${p.avatar})`;
+      document.getElementById('addFriendBtn').onclick = () => friendAdd(p);
+      document.getElementById('friendModal').style.display = 'flex';
+    }
+    function closeFriendProfile() {
+      document.getElementById('friendModal').style.display = 'none';
+    }
+
+    // Add Friend: Pending -> Friend (5s mock)
+    function friendAdd(p) {
+      closeFriendProfile();
+      const list = document.getElementById('friendList');
+      if (list.children.length === 1 && list.children[0].innerText === "No friends yet") {
+        list.innerHTML = "";
+      }
+      const li = document.createElement('li');
+      li.innerHTML = `${p.name} <span class="status-pill">Pending…</span>`;
+      list.appendChild(li);
+
+      setTimeout(() => {
+        li.innerHTML = `${p.name} <span class="status-pill">Friend</span>`;
+        li.onclick = () => friendOpenProfile(p);
+        friendsAccepted.add(p.name);
+        updateFriendBadge();
+      }, 5000);
+    }
+
+    function updateFriendBadge(){
+      const count = friendsAccepted.size;
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+        badge.classList.remove('pop');
+        void badge.offsetWidth; // reflow
+        badge.classList.add('pop');
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // reposition panel on scroll/resize
+    window.addEventListener('scroll', () => {
+      if (friendPanel.classList.contains('open')) positionFriendPanel();
+    });
+    window.addEventListener('resize', () => {
+      if (friendPanel.classList.contains('open')) positionFriendPanel();
+      const active = document.querySelector('.nav-item.active') || items[0];
+      moveOrb(active);
+    });
+
+    /* ===== Session Reminder System (ของจริง 5 นาที + กันเด้งซ้ำ) ===== */
+    const reminderShown = new Set();
+    function parseTimeRange(range){
+      const parts = range.split("-");
+      if(parts.length<1) return null;
+      const startStr = parts[0].trim();
+      const [h,m] = startStr.split(":").map(Number);
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+    }
+
+    function checkReminders(){
+      const cards = document.querySelectorAll('.grid .card');
+      const now = new Date();
+      cards.forEach(card=>{
+        const timeEl = card.querySelector("small");
+        if(!timeEl) return;
+        const start = parseTimeRange(timeEl.textContent);
+        if(!start) return;
+        const diff = start - now;
+        if(diff>0 && diff<=5*60*1000){
+          const title = (card.childNodes[0].textContent || card.textContent).trim().split("\n")[0].trim();
+          if(reminderShown.has(title)) return;
+          reminderShown.add(title);
+          showReminder(title, timeEl.textContent.trim());
+        }
+      });
+    }
+
+    function showReminder(title, time){
+      document.getElementById("reminderTitle").innerText = title;
+      document.getElementById("reminderTime").innerText = "เวลา: " + time;
+      document.getElementById("reminderModal").style.display="flex";
+      currentSession = title;
+    }
+
+    function closeReminder(){
+      document.getElementById("reminderModal").style.display="none";
+    }
+
+    function joinReminderSession(){
+  joinSession();   // เพิ่มเข้า My Sessions ด้วยเหมือนเดิม
+  closeReminder();
+
+  // ดึงไปหน้า wait ตามประเภท session
+  if((currentSession||"").toLowerCase().includes("statistics")){
+    location.href = "statistics_wait.html";
+  }
+  else if((currentSession||"").toLowerCase().includes("matrix")){
+    location.href = "matrix_wait.html"; // (ถ้ามีไฟล์ matrix_wait.html)
+  }
+}
+
+
+    setInterval(checkReminders, 30000);
+    window.addEventListener('load', checkReminders);
+  </script>
+</body>
+</html>
